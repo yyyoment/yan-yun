@@ -1,0 +1,748 @@
+---
+title: "Spotify Analysis"
+author: "[Yun Yan](https://yyyoment.github.io/yan-yun/archive.html)"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+# !!! You can add your social media info here. Mail, Linkedin, Instagram, Github, Twitter are now available. Or just delete the field for no social media icon.
+mail: "yyan5@nd.edu"
+linkedin: "yan-yun"
+github: "yyyoment"
+home: "yyyoment.github.io/yan-yun/"
+# !!! You need to provide a logo and background image here !!! Or just delete the field for no image
+logo: "spotify.png"
+bg: "spotify334.jpg"
+# !!! You can specify the theme color here
+color: "#69b3a2"
+output:
+  ndrmd::ndrmd1:
+    toc: TRUE
+    number_sections: FALSE
+    code_folding: "hide"
+---
+<style>
+div.blue {
+    background-color:rgba(105, 179, 172, 0.15); 
+    border-radius: 9px; 
+    padding: 20px;
+    font-weight:500;
+    font-size: 18px;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,warning = FALSE, message = FALSE,error=FALSE,class.source = 'fold-show')
+library(spotifyr)
+library(tidyverse)
+library(jsonlite)
+library(httr)
+library(plyr)
+library(generics)
+set.seed(1234)
+```
+
+<br><br>
+
+Music contains so much information. We can not only compare all the hit songs to conclude the popular music trend, but also analyse the song behaviour of a particular person and get to know more about him/her through just a small music application.
+
+Spotify is one of the top music streaming service around . With 35+ million songs and 170+ million monthly active users, musicians can spread their music and reach the audience easily. Also, it is an ideal platform for users to find their favorite music quickly and conveniently due to its large catalog, collaborative playlists, podcasts, and other attractive features. On the app, music can be browsed or searched via various parameters — such as artists, album, genre, playlist, or record label. Users can create, edit, and share playlists, share tracks on social media, and make playlists with other users.
+
+Recently, I discovered that the Spotify API provides audio features for each song in its database, with which we are able to quantify a song. Therefore, I would like to conduct some music analysis based on it.
+
+# Intro
+
+This project is divided into two parts. The goal in Part I is to analyze what song characteristics would affect its popularity. To achieve this, I built up a regression model and set the popularity as the dependent variable. The goal in Part II is to create a like song prediction system for a specific spotify user.
+
+For the study, I will access the Spotify Web API, which provides data from the Spotify music catalog. This can be accessed via standard HTTPS requests to an API endpoint.
+
+The Spotify API provides, among other things, track information for each song, including audio statistics such as danceability, instrumentalness, or tempo. Each feature measures an aspect of a song. Detailed information on how each feature is calculated can be found in the [Spotify API Website](https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-features/). 
+
+# Part ♪
+
+## Web Scraping I 
+***
+
+First, I got my Client ID and the Client Secret credentials from the [Spotify for Developers](https://developer.spotify.com/) to connect to the Spotify API. 
+
+```{r eval=FALSE}
+Sys.setenv(SPOTIFY_CLIENT_ID = 'client_id')
+Sys.setenv(SPOTIFY_CLIENT_SECRET = 'client_secret')
+access_token <- get_spotify_authorization_code()
+```
+
+Then, I created two new functions for personal usage based on some functions in the `spotifyr` package. 
+
+- **search_spotify1()**: It is like searching in the spotify application. The returned results should be album/artist/playlist/track search result for one specifc genre.
+
+- **main()**: I used the `search_spotify1()` function I created above on 7 selected genres (country, jazz, classical, hip-hop, rap, pop and rock) repeatedly to get 10 thousand tracks for each genre and intend to bind them in one large list.
+
+```{r eval=FALSE}
+track_lists <- data.frame()
+# function1
+search_spotify1 <- function(genre = character(), 
+                            type = c('album', 'artist', 'playlist', 'track'), 
+                            market = NULL, 
+                            limit = 20, 
+                            offset = 0, 
+                            include_external = NULL, 
+                            authorization = get_spotify_access_token(),
+                            include_meta_info = FALSE) {
+  
+  base_url <- 'https://api.spotify.com/v1/search'
+  
+  if (!is.character(genre)) {
+    stop('"genre" must be a string')
+  }
+  
+  if (!is.null(market)) {
+    if (!str_detect(market, '^[[:alpha:]]{2}$')) {
+      stop('"market" must be an ISO 3166-1 alpha-2 country code')
+    }
+  }
+  
+  if ((limit < 1 | limit > 50) | !is.numeric(limit)) {
+    stop('"limit" must be an integer between 1 and 50')
+  }
+  
+  if ((offset < 0 | offset > 10000) | !is.numeric(offset)) {
+    stop('"offset" must be an integer between 1 and 10,000')
+  }
+  
+  if (!is.null(include_external)) {
+    if (include_external != 'audio') {
+      stop('"include_external" must be "audio" or an empty string')
+    }
+  }
+  
+  params <- list(
+    q =  str_replace_all(str_glue('genre:"{genre}"'), ' ', '+'),
+    type = paste(type, collapse = ','),
+    market = market,
+    limit = limit,
+    offset = offset,
+    include_external = include_external,
+    access_token = authorization
+  )
+  res <- RETRY('GET', base_url, query = params, encode = 'json')
+  stop_for_status(res)
+  
+  res <- fromJSON(content(res, as = 'text', encoding = 'UTF-8'), flatten = TRUE)
+  
+  if (!include_meta_info && length(type) == 1) {
+    res <- res[[str_glue('{type}s')]]$items %>% 
+      as_tibble %>% 
+      mutate(genre = genre,market=market)
+  }
+  
+  return(res)
+}
+
+# function2
+track_lists <- data.frame()
+main <- function(n){
+  for (genre1 in c('country','jazz', 'classical', 'hip-hop', 'rap', 'pop', 'rock')){
+    
+    for (offset1 in 0:n){
+      track_list <- search_spotify1(genre=genre1,
+                                    type='track',
+                                    market='US',
+                                    limit = 50,
+                                    offset = offset1*50)
+      track_lists <- rbind.fill(track_lists,track_list)
+      print(paste0('Call #',offset1+1,' for the tracks in ',genre1))
+    }
+  }
+  return(track_lists)
+  Sys.sleep(5)
+}
+
+# get the full list of songs
+track_lists1 <- lapply(199,main)
+track_lists2 <- track_lists1[[1]]
+```
+
+With the help of the `spotifyr` package, I was able to collect audio features information using the `get_track_audio_features()` function and collect artist information using the `get_artists()` function. I stored all the information I extracted in one .csv file.
+
+```{r eval=FALSE}
+# artist information
+track_lists2['artist.id'] <- NA
+track_lists2['artist.name'] <- NA
+for (i in 1:nrow(track_lists2)){
+  track_lists2[i,31] <- track_lists2$artists[[i]][1,][["id"]]
+  track_lists2[i,32] <- track_lists2$artists[[i]][1,][["name"]]
+}
+
+# unique
+track_lists3 <- track_lists2 %>% 
+  group_by(id,name,album.id,album.name,album.release_date,album.total_tracks,artist.id,
+           artist.name,popularity) %>% 
+  filter(genre == max(genre)) %>% 
+  ungroup() %>% 
+  select(id,name,album.id,album.name,album.release_date,album.total_tracks,artist.id,
+         artist.name,popularity,genre) %>% 
+  distinct()
+
+# get the feasures of songs (limit: 100)
+features <- data.frame()
+for (i in 0:floor(nrow(track_lists3)/100)){
+  if (i<floor(nrow(track_lists3)/100)){
+features_temp <- get_track_audio_features(track_lists3$id[(i*100+1):((i+1)*100)])
+features <- rbind.fill(features,features_temp)
+  }
+  else{
+    features_temp <- get_track_audio_features(track_lists3$id[(i*100+1):(nrow(track_lists3))])
+    features <- rbind.fill(features,features_temp)
+  }
+}
+
+features <- features %>% select(-uri,-track_href,-analysis_url,-type,-id)
+track_listsa <- cbind(track_lists3,features)
+
+# get the artist information of songs (limit: 50)
+artists <- data.frame()
+for (i in 0:floor(nrow(track_lists3)/50)){
+  if (i<floor(nrow(track_lists3)/50)){
+    artists_temp <- get_artists(track_lists3$artist.id[(i*50+1):((i+1)*50)])
+    artists <- rbind.fill(artists,artists_temp)
+  }
+  else{
+    artists_temp <- get_artists(track_lists3$artist.id[(i*50+1):(nrow(track_lists3))])
+    artists <- rbind.fill(artists,artists_temp)
+  }
+}
+
+artists <- artists %>% 
+  select(popularity,followers.total) %>% 
+  rename(`artists.popularity`=popularity)
+track_listsb <- cbind(track_listsa,artists)
+
+# output
+write.csv(track_listsb, file = "spotify.csv",row.names=FALSE)
+```
+
+## Data Processing I
+***
+
+I have collected 55557 observations with 26 variables, among which there are 14 numerical variables and 12 categorical variables. Also, I outputed the summary information of all the variables.
+
+We want to analyze the what would impact the popularity of a song. That is to say, we set the popularity as our dependent variable.
+
+```{r}
+sp <- read_csv("e:/Documents/spotify.csv")
+
+sp <- sp %>% 
+  mutate(genre=as.factor(genre),
+         album.release_year = substring(album.release_date,1,4),
+         album.release_year = ifelse(album.release_year == '0000','2009',album.release_year),
+         album.release_year = as.factor(album.release_year),
+         key=as.factor(key),
+         mode=as.factor(mode),
+         time_signature=as.factor(time_signature)
+  )
+dim(sp)
+summary(sp)
+```
+
+
+## EDA
+***
+
+We firstly want to explore the relationship between popularity and several categorical variables to get a better sense of our data.
+
+### ▶ Mode & Popularity
+
+**Null Hypothesis:** There is *no difference* in the mean popularity of different music mode.
+
+I used both graphical and statistical method to conduct hypothesis testing.
+
+Surprisingly, a song with minor mode (a song contains more darkness, sadness, ugliness and feminitiy) would tend to be more popular.
+
+
+<div class = "row">
+  
+<div class = "col-md-6">
+```{r}
+ttest <- t.test(popularity~mode,sp)
+tidy(ttest)
+```
+</div>
+
+<div class = "col-md-6">
+```{r fig.height=4.5,class.source = NULL}
+ggplot(sp)+
+  geom_boxplot(aes(x=mode, y= popularity,color=mode),size=1.6)+
+  theme(plot.background = element_blank(),
+        panel.background = element_blank(),
+        legend.key = element_blank())+
+  labs(title = 'Relationship b/w Mode & Popularity')
+```
+</div>
+
+</div>
+
+### ▶ Key & Popularity
+
+**Null Hypothesis:** There is *no difference* in the mean popularity of different music key.
+
+Based on our ANOVA test result, the null hypothesis should be rejected. Artists may get some insights from the TukeyHSD result when considering whether shifting from one certain key to another key for a new song. For example, if the artist is debating between key C and key D for his/her new song, our suggestion based on the TukeyHSD would be that the debating is pointless. When other things remain the same, change between key C and key D for a song makes almost no different because the p-value for the 2-0 comparison (the first row in the table) is 1.
+
+<div class = "row">
+  
+<div class = "col-md-6">
+```{r}
+aov <- aov(popularity ~ key,sp)
+tidy((aov))
+```
+</div>
+
+<div class = "col-md-6">
+```{r fig.height=4.5,class.source = NULL}
+ggplot(sp)+
+  geom_boxplot(aes(x=key, y= popularity,color=key,middle=mean(popularity)),size=1.6)+
+  theme(plot.background = element_blank(),
+        panel.background = element_blank(),
+        legend.key = element_blank())+
+  labs(title = 'Relationship b/w Key & Popularity')+
+  geom_hline(aes(yintercept=mean(popularity)),size=1.6)
+```
+</div>
+
+</div>
+
+```{r}
+tidy(TukeyHSD(aov)) %>% arrange(desc(adj.p.value))
+```
+
+### ▶ Time Signature & Popularity
+
+<div class = "row">
+  
+<div class = "col-md-6">
+<div class='font'>
+<br>The song with 4 time signature is dominating the market. If an artist wants to create a popular song, he/she might want to follow the main market trend and focus on the 4 time signature.
+</div>
+</div>
+
+<div class = "col-md-6">
+```{r fig.height=4.5,class.source = NULL}
+sp %>% 
+  filter(time_signature!='0') %>% 
+  ggplot()+
+  geom_boxplot(aes(x=time_signature, y= popularity,color=time_signature,
+                   middle=mean(popularity)),size=1.2)+
+  theme(plot.background = element_blank(),
+        panel.background = element_blank(),
+        legend.key = element_blank())+
+  labs(title = 'Relationship b/w Time_Signature & Popularity')+
+  geom_hline(aes(yintercept=mean(popularity)),size=1.2)
+```
+</div>
+
+</div>
+
+<div class='blue'>
+Therefore, we can come up with a basic conclusion that, if an artist wants to make a popular song, he/she would better focus on a song with minor mode, C♯, D♭, E, F♯, G♭, G♯, A and B key,and 4 time signature.
+</div>
+
+## Feature Selection
+***
+
+There are too many varibables at present and feature selection is needed. Therefore, I made the correlation plot to detect the multicollinearity as well as used Lasso Test to add pentalty on variables in order to get the most valuable ones.
+
+```{r fig.align="center", fig.width=8,fig.height=7}
+sp_n <- sp %>% keep(is.numeric) %>% select(-popularity)
+library(corrplot)
+corrplot.mixed(cor(sp_n), lower = "number", upper = "square", tl.pos='lt',order = "FPC",
+               tl.cex=0.7,tl.srt=45,number.cex=0.9,diag='l')
+```
+
+From the plot, we can find that the squares in the corner show the stronger relationship. It can help us to remove the acousticness, energy, instrumentalness and artists.popularity variables. 
+
+Then, I used the lasso test to add a penalty on the rest variables to get the most valuable ones.
+
+```{r}
+# feature selection 1 (based on correlation)
+sp1 <- sp %>% select(-acousticness,-energy,-instrumentalness,-artists.popularity)
+
+# feature selection 2 (based on lasso)
+library(penalized)
+lassoTest <- penalized(response = popularity, 
+                       penalized = ~ danceability + loudness + speechiness +
+                                   liveness + valence + tempo + duration_ms +
+                                     followers.total + mode + time_signature + key, 
+                       data = sp1, lambda1 = 13000, 
+                       model = "linear", trace = FALSE)
+coefficients(lassoTest)
+```
+
+<div class='font'>
+Finally, I got 5 variables: **danceability**, **loudness**, **tempo**, **duration_ms** and **followers.total**, and now I can start to build my model.
+</div>
+
+## Linear Regression
+***
+
+### ▶ Centering
+
+<div class='font'>
+In order to increase the interpretation power of my model, I centered some of my variables so that the intercept would have a meaning even though the variable equals zero.
+</div>
+
+```{r}
+sp1 <- sp1 %>% 
+  mutate(tempo=tempo-mean(tempo,na.rm=TRUE),
+         duration_ms=duration_ms-mean(duration_ms,na.rm=TRUE))
+```
+
+### ▶ Model
+
+I built the simple linear regression model. 
+
+First of all, we can look at the R-squared value to learn how much the variability within the popularity of a song can be accounted for our predictor variables. The R-squared value is 0.33, which means the current independent variables we choose can explain approximately 33% of the variablitify of the song popularity.
+
+Then, we can find that the p-value for F-test is quite small, which suggested that the model has passed the F-test.The overall significance of our model is significant.
+
+Furthermore, we can see that all the coefficients here have pass the t-test and the p-values suggest that they are all very significant. 
+
+```{r}
+# linear regression - 5 variable
+lm <- lm(popularity~danceability+loudness+tempo+duration_ms+followers.total,sp1)
+summary(lm)
+```
+
+### ▶ Post Power Analysis
+
+We conduct an a post power analysis to determine the sample size we used is effective.Using $f^2 = \frac{R^2_{adjusted}}{1 - R^2_{adjusted}}$ as our effect size, the power we got is 1. It suggests that it is safe for us to move forward.
+
+```{r}
+pwr::pwr.f2.test(u=1, v=55551, f2=0.3304/(1-0.3304), sig.level=0.05)
+```
+
+### ▶ Outliers
+
+Then, we want to confirm that whether there are outliers in our model. The plot below is a Residuals vs Leverage plot in which no evidence of outliers have shown up. Those "Cook's distance" dashed curves don't even appear on the plot. None of the points come close to having both high residual and leverage.
+
+```{r fig.align="center"}
+plot(lm,5)
+```
+
+### ▶ Heteroscadesticity
+
+In order to detect the heteroscadesticity, I used both graphical and statistical methods. From the graph, we can identify that there is a declining trend. The null hypothesis of the bptest is that the residuals are constant. We can see here the p-value of both models are quite small, which means that we will reject the null hypothesis.
+
+```{r fig.align="center"}
+plot(lm$fitted.values, lm$residuals)
+lmtest::bptest(lm)
+lmtest::coeftest(lm, vcov = sandwich::vcovHC(lm))
+```
+
+<div class='blue'>
+From the above analysis, we know that outliers are fine but there is a heteroscadesticity in my model. By using a heteroscedasticity-consistent covariance matrix to test our coefficients, we have more reasonable estimates.
+</div>
+
+## Mixed Model
+***
+
+### ▶ The Genre Variable
+
+I want to explore on the genre variable since I think music in different genre would have different performance. We can see from the left visual below that the popularity distribution within each genre is diffferent, and the right one shows that the music characteristics of each genre are different as well (This radar chart is interactive. You can click on the genres to choose whether to show or hide it).
+
+<div class = "row">
+  
+<div class = "col-md-6">
+```{r class.source = NULL}
+ggplot(sp)+
+  geom_density(aes(x=popularity,fill=genre),alpha=0.4)+
+  theme(plot.background = element_blank(),
+        panel.background = element_blank(),
+        legend.key = element_blank())+
+  labs(title = 'Relationship b/w Genre & Popularity')
+```
+</div>
+
+<div class = "col-md-6">
+```{r fig.height=4.5,class.source = NULL}
+quantile <- sp1 %>% 
+  dplyr::group_by(genre) %>% 
+  dplyr::summarise(popularity = list(enframe(quantile(popularity, probs=0.5)))) %>% 
+  unnest(cols=c(popularity))
+
+quantile_set <- sp1 %>% left_join(quantile,by=c('genre')) %>% filter(popularity==value)
+
+quantile_set1 <- quantile_set %>% 
+  group_by(genre) %>% 
+  summarise_all(mean) %>%  
+  map(~.x) %>%
+  discard(~all(is.na(.x))) %>%
+  map_df(~.x) %>% 
+  select(-value,-popularity)
+
+quantile_norm <- cbind(quantile_set1[1], apply(quantile_set1[-1],2, function(x){(x-min(x)) / diff(range(x))})) 
+
+radar <- gather(quantile_norm, key=Attribute, value=Score, -genre) %>%
+  spread(key=genre, value=Score)
+
+library(radarchart)	
+
+chartJSRadar(scores = radar, scaleStartValue = -1, maxScale =1, polyAlpha=0.2,lineAlpha = 0.9, showToolTipLabel = TRUE)
+```
+</div>
+
+</div>
+
+### ▶ Mixed Model
+
+We are not going to add genre as another predictor, but we are going to include it as another level to our model with the mixed model. 
+
+```{r fig.align="center"}
+# mixed model with genre
+
+library(lme4)
+intMod <- lmer(popularity ~  1 + (1|genre), data = sp1)
+summary(intMod)
+```
+
+ICC means the intraclass correlation and it ranges from 0 (no variance between clusters) to 1 (variance between clusters). It shows that 62% of variance in song popularity is accounted for by the genre alone.
+
+```{r fig.align="center"}
+ICC <- 148.95 / (148.95 + 89.56)
+ICC
+```
+
+By integrating information about the groups, we are getting a better sense of how much uncertainty our model contains at the global average level. I put the final interpretation of the model at the end of this section.
+
+The standard deviation is telling us how much the effect moves around based upon genre after getting the information from our fixed effects. For example, the effect move around nearly 11.663 from genre alone).
+
+```{r fig.align="center"}
+riMod <- lmer(popularity ~ danceability+loudness+tempo+duration_ms+followers.total + (1|genre), data = sp1)
+summary(riMod)
+```
+
+The fixed effects account for nearly 0.30% of the variation within the effects while the random effects account for nearly 60.53% of the variation within the effects.
+
+```{r fig.align="center"}
+MuMIn::r.squaredGLMM(riMod)
+```
+
+We also plot simulated random effect ranges for each of the random effect groups. We can see that the effect range is quite large.
+
+```{r fig.align="center"}
+library(merTools)
+plotREsim(REsim(riMod), labs = TRUE)
+```
+
+We can see that after our mixed model, our plot becomes more condensed. It means that the mixed model is better.
+
+```{r fig.align="center"}
+mixedPred <- predict(riMod)
+slimPred <- predict(lm)
+allPred <- cbind(actual = sp1$popularity, 
+                 mixed = mixedPred, 
+                 slim = slimPred)
+
+par(mfrow=c(1,2)) 
+plot(allPred[, "actual"], allPred[, "slim"])
+plot(allPred[, "actual"], allPred[, "mixed"])
+```
+
+<div class='blue'>
+Now we have a better understanding of how different genre groups affect the dependent variable and the globalised effect on the popularity variable.
+
+From the regression result, we know that if the artist wants to produce a popular song, he/she should consider to make it louder. It may be beneficial for a song to spread out. Also, a popular song should have lower tempo and durations. It may be resulted from that people tend to lose patience on long songs. Besides, it is important for artists to get more followers to make their songs more popular.
+
+I also noticed that the coefficients are a little bit different from my original linear regression model. I think my mixed model would be more reliable since it is more generalized and it has included the genre variable for the random effect. Also, random slope model should also be considered to improve the model.
+</div>
+
+# Part ♪♪
+
+Based on my current song database, I want to collect song data from one certain person and build a model to predict whether she would like a certain song or not. I got a volunteer from my class and I scrapped all the songs she liked in her spotify account.
+
+## Web Scraping II
+***
+
+I collected audio features as well as the artist information for all the songs that my volunteer has liked. Then I stored all the information I extracted in one .csv file.
+
+```{r,eval=FALSE}
+mine <- data.frame()
+main1 <- function(n){
+  for (offset1 in 0:n){
+    mine_temp <- get_my_saved_tracks1(limit = 20,offset = offset1*20)
+    mine <- rbind(mine,mine_temp)
+    print(paste0('Call #',offset1+1,' for the tracks'))
+  }
+  return(mine)
+  Sys.sleep(5)
+}
+mine_kat <- lapply(163,main1)
+mine_kat1 <- mine_kat[[1]]
+
+# artist information
+mine_kat1['artist.id'] <- NA
+mine_kat1['artist.name'] <- NA
+for (i in 1:nrow(mine_kat1)){
+  mine_kat1[i,31] <- mine_kat1$track.artists[[i]][1,][["id"]]
+  mine_kat1[i,32] <- mine_kat1$track.artists[[i]][1,][["name"]]
+}
+
+mine_kat2 <- mine_kat1 %>% 
+  select(added_at,track.duration_ms,track.id,track.name,track.popularity,track.album.id,track.album.name,track.album.release_date,track.album.total_tracks,artist.id,artist.name) %>% rename(track.artist.id=artist.id,track.artist.name=artist.name)
+
+features_kat <- data.frame()
+for (i in 0:floor(nrow(mine_kat2)/100)){
+  if (i<floor(nrow(mine_kat2)/100)){
+    features_temp1 <- get_track_audio_features(mine_kat2$track.id[(i*100+1):((i+1)*100)]) #less than 100
+    features_kat <- rbind.fill(features_kat,features_temp1)
+  }
+  else{
+    features_temp1 <- get_track_audio_features(mine_kat2$track.id[(i*100+1):(nrow(mine_kat2))]) #less than 100
+    features_kat <- rbind.fill(features_kat,features_temp1)
+  }
+}
+
+features_kat <- features_kat %>% select(-uri,-track_href,-analysis_url,-type,-id)
+mine_kata <- cbind(mine_kat2,features_kat)
+
+# get the artist information of songs
+artists_kat <- data.frame()
+for (i in 0:floor(nrow(mine_kata)/50)){
+  if (i<floor(nrow(mine_kata)/50)){
+    artists_temp1 <- get_artists(mine_kata$track.artist.id[(i*50+1):((i+1)*50)]) #less than 50
+    artists_kat <- rbind.fill(artists_kat,artists_temp1)
+  }
+  else{
+    artists_temp1 <- get_artists(mine_kata$track.artist.id[(i*50+1):(nrow(mine_kata))]) #less than 50
+    artists_kat <- rbind.fill(artists_kat,artists_temp1)
+  }
+}
+
+artists_kat <- artists_kat %>% select(popularity,followers.total) %>% rename(artists.popularity=popularity)
+mine_katb <- cbind(mine_kata,artists_kat)
+
+# output
+write.csv(mine_katb, file = "kat.csv",row.names=FALSE)
+```
+
+## Data Processing II
+***
+
+I combined the two datasets and labeled the song in my old database as not-like(0) and the song my volunteer has already liked as like(1).
+
+```{r}
+# data processing -
+kat <- read_csv("e:/Documents/kat.csv") 
+spc <- sp %>% dplyr::select(-genre,-album.release_year) %>% mutate(like=0)
+
+
+mine_katc <- kat %>% dplyr::select(`track.id`,`track.name`,`track.album.id`,
+                                   `track.album.name`,`track.album.release_date`,
+                                   `track.album.total_tracks`,`track.artist.id`,
+                                   `track.artist.name`,`track.popularity`,
+                                   danceability,energy,key,loudness,mode,speechiness,
+                                   acousticness,instrumentalness,liveness,valence,
+                                   tempo,duration_ms,time_signature,`artists.popularity`,
+                                   `followers.total`) %>% mutate(like=1)
+colnames(mine_katc) <- colnames(spc)
+new <- rbind(spc,mine_katc)
+
+new <- new %>% 
+  mutate(album.release_year = substring(album.release_date,1,4),
+         album.release_year = ifelse(album.release_year == '0000','2009',album.release_year),
+         album.release_year = as.factor(album.release_year),
+         key=as.factor(key),
+         mode=as.factor(mode),
+         time_signature=as.factor(time_signature),
+         like=as.numeric(like)
+  )
+summary(new)
+sp_new1 <- new %>%
+  distinct() %>% 
+  keep(is.numeric) %>% 
+  mutate(like=as.factor(like))
+sp_new2 <- data.frame(scale(sp_new1[1:14]))
+sp_new2[15] <- sp_new1[15]
+sp_new1 <- sp_new2
+```
+
+## Split and Balance
+***
+
+I decided to include 70% of the data in the training dataset and the rest of them in the test dataset. Then I found that the training dataset is not well-balanced and it may cause the accruacy paradox. Therefore, I used the `SMOTE()` function to balance it.
+
+
+```{r}
+set.seed(1)
+library(caret)
+dsub <- createDataPartition(sp_new1$like,p=0.7,list = F)
+sp_train <- sp_new1[dsub,]
+sp_test <- sp_new1[-dsub,]
+
+round(prop.table(table(dplyr::select(sp_train, like), exclude = NULL)), 4) * 100
+
+sp_train <- DMwR::SMOTE(like ~ ., data.frame(sp_train), perc.over = 100, perc.under = 200)
+
+round(prop.table(table(dplyr::select(sp_train, like), exclude = NULL)), 4) * 100
+```
+
+## Logistic Regression
+***
+
+I want to predict whether my volunteer would like a certain song or not, so I choose to build a logistic regression model.
+
+First of all, I used the backward regression method to come up with the model with the lowest AIC.
+
+```{r}
+logTest = glm(like ~ ., 
+              data = na.omit(sp_train), 
+              family = binomial(link="logit"))
+
+step(logTest, direction = "backward",trace=FALSE) 
+logreg=glm(like ~ 
+             album.total_tracks + 
+             popularity+
+             danceability+
+             loudness+
+             speechiness+
+             acousticness+
+             instrumentalness+
+             liveness+
+             valence+
+             tempo+
+             duration_ms+
+             artists.popularity+
+             followers.total, 
+           data = na.omit(sp_train),
+           family = binomial(link="logit"))
+summary(logreg)
+
+like_pred <- predict(logreg, sp_test, type = "response")
+
+ideal_cutoff <- InformationValue::optimalCutoff(
+  actuals = sp_test$like,
+  predictedScores = like_pred,
+  optimiseFor = "Both")
+ideal_cutoff
+like_pred_value <- ifelse(like_pred > ideal_cutoff,1,0)
+
+table <- table(sp_test$like, like_pred_value)
+sum(diag(table)) / nrow(sp_test)
+```
+
+<div class='blue'>
+From the result of my logistic regression, we can that this person likes songs with high danceability and loudness, from which we can infer that she might like EDM (Electronic dance music) a lot. Also, we can see that she does not like songs with high speechiness, which might indicate she does not like rap songs. Lastly, we found that the popularity of a song would have a negative impact on the log-odds of liking the song while the popularity of an artist has a positive impact. This person is like a treasure hunter who want to dig deep and find songs that are not popular from an artist.
+</div>
+<br>
+<div class='font'>
+[A ShinyApp](https://yan-yun.shinyapps.io/spotify/) has been created for my Spotify Analysis.
+</div>
+
+# Last Thoughts
+
+<div class='blue'>
+My analysis focuses on both the market and user. There are some parties that may be benefited from my analysis.
+
+- <strong>Agent Companies</strong> Based on my anlysis, agent companies would know what kind of songs and artists would be the most popular in the market.
+
+- <strong>Artists</strong> When artists are makeing new songs, they can learn from my analysis to choose the optimal parameter to get their songs more popular.
+
+- <strong>Users</strong> They can analyse all their liked song to better understand their own listening behaviour.
+
+Since there is so many numerical variables in my datasets, a clustering model can be built to generate clusters for songs and artists and get interesting findings.
+</div>

@@ -109,22 +109,28 @@ $(document).ready(function() {
     //------- Accordian Js --------//
 
     var allPanels = $(".accordion > dd").hide();
-    allPanels.first().slideDown("easeOutExpo");
+    allPanels.first().slideUp("easeInExpo");
     $(".accordion").each(function() {
-        $(this).find("dt > a").first().addClass("active").parent().next().css({
-            display: "block"
+        $(this).find("dt > a").first().removeClass("active").parent().next().css({
+            display: "none"
         });
     });
 
 
-     $(document).on('click', '.accordion > dt > a', function(e) {
+    $(document).on('click', '.accordion > dt > a', function(e) {
 
         var current = $(this).parent().next("dd");
+        if ($(this).hasClass("active")){
         $(this).parents(".accordion").find("dt > a").removeClass("active");
-        $(this).addClass("active");
+        $(this).removeClass("active");
         $(this).parents(".accordion").find("dd").slideUp("easeInExpo");
-        $(this).parent().next().slideDown("easeOutExpo");
-
+        $(this).parent().next().slideUp("easeInExpo");
+        } else {
+            $(this).parents(".accordion").find("dt > a").removeClass("active");
+            $(this).addClass("active");
+            $(this).parents(".accordion").find("dd").slideUp("easeInExpo");
+            $(this).parent().next().slideDown("easeOutExpo");
+        }
         return false;
 
     });
