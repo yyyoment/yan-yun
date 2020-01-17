@@ -184,11 +184,11 @@
 					<h2 class="section-heading text-uppercase">Portfolio</h2>
 					<h3 class="section-subheading text-muted">A glimpse of the projects I've been working on</h3>
 					<div id="portfolio-button-container">
-					  <button class="btn btn-secondary active" data-portfolio-section="all">Show all</button>
-					  <button class="btn btn-secondary" data-portfolio-section="dataana">Data Analytics</button>
-					  <button class="btn btn-secondary" data-portfolio-section="DataViz">Data Visualization</button>
-					  <button class="btn btn-secondary" data-portfolio-section="statistics">Statistics</button>
-					  <button class="btn btn-secondary" data-portfolio-section="ml">Machine Learning</button>
+						<button class="btn btn-secondary active" data-portfolio-section="all">Show all</button>
+						<button class="btn btn-secondary" data-portfolio-section="dataana">Data Analytics</button>
+						<button class="btn btn-secondary" data-portfolio-section="dataviz">Data Visualization</button>
+						<button class="btn btn-secondary" data-portfolio-section="statistics">Statistics</button>
+						<button class="btn btn-secondary" data-portfolio-section="ml">Machine Learning</button>
 					</div>
 					<br>
 				  </div>
@@ -196,41 +196,39 @@
 				<br><br>
 				<div id="portfolio-items" class="row">
 		
+				<div class="col-md-3 col-sm-6 portfolio-item show column dataviz statistics dataana ">
+					<a class="portfolio-link" data-toggle="modal" href="#spotify">
+					  <div class="portfolio-hover">
+						<div class="portfolio-hover-content">
+						  <p>Spotify Analysis</p>
+						  <hr>
+						  <p class="explanation_portfolio">- Used <font color="black"><strong>R</strong></font> to apply mixed model and logistic regression to analyze song popularity and predict whether a song would be liked by a user. <br>- Visualize the prediction result in a <font color="black"><strong>R Shiny App</strong></font>.</p>
+						</div>
+					  </div>
+					  <img class="img-fluid" src="img1/project-pic/spotify.jpg" alt="" style="border-radius: 2%;">
+					</a>
+				  </div>		
 		
-		
-				  <div class="col-md-3 col-sm-6 portfolio-item show column statistics">
+				  <div class="col-md-3 col-sm-6 portfolio-item show column statistics dataana">
 					<a class="portfolio-link" data-toggle="modal" href="#effectiveleader">
 					  <div class="portfolio-hover">
 						<div class="portfolio-hover-content">
 						  <p>What Makes An Effective Leader?</p>
 						  <hr>
-						  <p class="explanation_portfolio">Using <font color="black"><strong>R</strong></font> to apply hypothesis testing, power analysis, bootstrap resampling and robust standard error.</p>
+						  <p class="explanation_portfolio">Used <font color="black"><strong>R</strong></font> to apply hypothesis testing, power analysis, bootstrap resampling and robust standard error.</p>
 						</div>
 					  </div>
-					  <img class="img-fluid" src="img1/project-pic/test.png" alt="">
+					  <img class="img-fluid" src="img1/project-pic/leader.jpg" alt="" style="border-radius: 2%;">
 					</a>
 				  </div>
 		
-		
-				  <div class="col-md-3 col-sm-6 portfolio-item show column DataViz statistics ml ">
-					<a class="portfolio-link" data-toggle="modal" href="#effectiveleader1">
-					  <div class="portfolio-hover">
-						<div class="portfolio-hover-content">
-						  <p>testtesttest</p>
-						  <hr>
-						  <p class="explanation_portfolio">testtesttest <i>testtesttest</i></p>
-						</div>
-					  </div>
-					  <img class="img-fluid" src="img1/project-pic/test.png" alt="">
-					</a>
-				  </div>
 		
 		
 				  
 		
 		
 				</div>
-				<div align="right" style="font-size:18px"><strong><a href='archive.html'>go to the archive&nbsp;🡲</a></strong>
+				<div align="right" style="font-size:18px"><strong><a href='archive.html'>go to the archive&nbsp;&#8594;</a></strong>
 			  </div></div>
 			  
 			</section>
@@ -244,50 +242,47 @@
 	  
     <!-- UKB geo application -->
     <center><div class="portfolio-modal modal fade" id="effectiveleader" tabindex="-1" role="dialog" aria-hidden="true">
-			<div class="modal-dialog h-100">
-			  <div class="modal-content">
-				<div class="close-modal" data-dismiss="modal">
-				  <div class="lr">
-					<div class="rl"></div>
-				  </div>
-				</div>
-				<div class="container">
-				  <div class="row">
-					<div class="col-lg-11 mx-auto">
-					  <div class="modal-body">
+		<div class="modal-dialog h-100">
+		  <div class="modal-content">
+			<div class="close-modal" data-dismiss="modal">
+			  <div class="lr">
+				<div class="rl"></div>
+			  </div>
+			</div>
+			<div class="container">
+			  <div class="row">
+				<div class="col-lg-11 mx-auto">
+				  <div class="modal-body">
 
-						<div class="row">
-
-							<div class="col-lg-9" style="padding-top: 40px;padding-bottom: 40px;">
-						<div style="text-align: left">
-						  <h6>Description</h6>
-						  <hr>
-						  <p>Why are some people seen as effective leaders and others are not? Are there any behaviors or characteristics that can help us quantify what an effective leader looks like? </p>
-						  <p>I used the data from a large survey of employees and their direct manager. This data contains individual items and the scale score for those items. The main goal is to use individual items, scale subscores, and/or scale scores to explain the effect variable.</p>
-						  <p>I used <font color="#69B3AB">R</font> to apply <u>hypothesis testing, power analysis, bootstrap resampling and robust standard error</u>.</p>
-						</div>
+					<div class="row">
+					<div class="col-lg-3" style="padding-top: 40px;padding-bottom: 40px;">
+					
+					<img src="img1/project-pic/leader.jpg" width="120px"></img>
+					<h4>What Makes An Effective Leader?</h4>
+					<p style="max-width: 600px"><br>A statistical analysis towards the relationship between the effect variable and other predictors.</p>
+					<a style="margin-top: 0px" class="  btn text-uppercase js-scroll-trigger"  target="_blank">Code</a>
+					<a style="margin-top: 0px" class="btn btn-secondary btn text-uppercase js-scroll-trigger" title="test" href="work/What Makes An Effective Leader.html" target="_blank" >Write-up</a>
+					
 					</div>
 
-						<div class="col-lg-3" style="padding-top: 40px;padding-bottom: 40px;">
-						
-						<img src="img1/project-pic/test.png" width="120px"></img>
-						<h4>What Makes An Effective Leader?</h4>
-						<p style="max-width: 600px"><br>A statistical analysis towards the relationship between the effect variable and other predictors.</p>
-						<a style="margin-top: 0px" class="btn btn-secondary btn text-uppercase js-scroll-trigger" href="work/as2_1.html" target="_blank">Code</a>
-						<a style="margin-top: 0px" class="btn btn-secondary btn text-uppercase js-scroll-trigger" href="work/as2_1.html" target="_blank">Write-up</a>
-						<br><br>
-						</div>
-
-						
-				  </div>
+					<div class="col-lg-9" style="padding-top: 40px;padding-bottom: 40px;">
+					<div style="text-align: left">
+					  <h6>Description</h6>
+					  <hr>
+					  <p>Why are some people seen as effective leaders and others are not? Are there any behaviors or characteristics that can help us quantify what an effective leader looks like? </p>
+					  <p>I used the data from a large survey of employees and their direct manager. This data contains individual items and the scale score for those items. The main goal is to use individual items, scale subscores, and/or scale scores to explain the effect variable.</p>
+					  <p>I used <font color="#69B3AB">R</font> to apply <u>hypothesis testing, power analysis, bootstrap resampling and robust standard error</u>.</p>
+					</div>
 				</div>
 			  </div>
 			</div>
+		  </div>
 		</div>
-		  </div></center>
+	</div>
+	  </div></center>
 	  
     <!-- UKB geo application -->
-    <center><div class="portfolio-modal modal fade" id="effectiveleader1" tabindex="-1" role="dialog" aria-hidden="true">
+    <center><div class="portfolio-modal modal fade" id="spotify" tabindex="-1" role="dialog" aria-hidden="true">
 			<div class="modal-dialog h-100">
 			  <div class="modal-content">
 				<div class="close-modal" data-dismiss="modal">
@@ -303,21 +298,22 @@
 						<div class="row">
 						<div class="col-lg-3" style="padding-top: 40px;padding-bottom: 40px;">
 						
-						<img src="img1/project-pic/test.png" width="120px"></img>
-						<h4>What Makes An Effective Leader?</h4>
-						<p style="max-width: 600px"><br>A statistical analysis towards the relationship between the effect variable and other predictors.</p>
-						<a style="margin-top: 0px" class="btn btn-secondary btn text-uppercase js-scroll-trigger" href="work/What Makes An Effective Leader.html" target="_blank">Code</a>
-						<a style="margin-top: 0px" class="btn btn-secondary btn text-uppercase js-scroll-trigger" title="test" href="work/What Makes An Effective Leader.html" target="_blank" >Write-up1</a>
-						<br><br>
+						<img src="img1/project-pic/spotify.jpg" width="120px"></img>
+						<h4>Spotify Analysis</h4>
+						<p style="max-width: 600px"><br>A statistical analysis on the song popularity & A prediction about liked song.</p>
+						<a style="margin-top: 0px" class="btn btn-secondary btn text-uppercase js-scroll-trigger" href="work/spotify.html" target="_blank">Write-up</a><br>
+						<a style="margin-top: 5px" class="btn btn-secondary btn text-uppercase js-scroll-trigger" title="test" href="https://yan-yun.shinyapps.io/spotify/" target="_blank" >Online App</a><br>
+						<a style="margin-top: 5px" class="btn btn-secondary btn text-uppercase js-scroll-trigger" title="test" href="https://github.com/yyyoment/spotify-analysis" target="_blank" >Code</a>
+						
 						</div>
 
 						<div class="col-lg-9" style="padding-top: 40px;padding-bottom: 40px;">
 						<div style="text-align: left">
 						  <h6>Description</h6>
 						  <hr>
-						  <p>Why are some people seen as effective leaders and others are not? Are there any behaviors or characteristics that can help us quantify what an effective leader looks like? </p>
-						  <p>I used the data from a large survey of employees and their direct manager. This data contains individual items and the scale score for those items. The main goal is to use individual items, scale subscores, and/or scale scores to explain the effect variable.</p>
-						  <p>I used <font color="#69B3AB">R</font> to apply <u>hypothesis testing, power analysis, bootstrap resampling and robust standard error</u>.</p>
+						  <p>Music contains so much information. We can not only compare all the hit songs to conclude the popular music trend, but also analyse the song behaviour of a particular person and get to know more about him/her through just a small music application. </p>
+						  <p>Spotify is one of the top music streaming service around . With 35+ million songs and 170+ million monthly active users, musicians can spread their music and reach the audience easily. Also, it is an ideal platform for users to find their favorite music quickly and conveniently due to its large catalog, collaborative playlists, podcasts, and other attractive features. On the app, music can be browsed or searched via various parameters — such as artists, album, genre, playlist, or record label. Users can create, edit, and share playlists, share tracks on social media, and make playlists with other users.</p>
+						  <p>This project is divided into two parts. The goal in Part I is to analyze what song characteristics would affect its popularity. To achieve this, I built up a <u>linear mixed model</u> using <font color="#69B3AB">R</font>. The goal in Part II is to create a like song prediction system for a specific spotify user. I used <font color="#69B3AB">R</font> to apply <u>logistic regression model</u> and deployed it in a <font color="#69B3AB">R Shiny App</font></p>
 						</div>
 					</div>
 				  </div>
