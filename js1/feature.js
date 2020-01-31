@@ -11,7 +11,7 @@ $(function(){
               '-moz-background-size': newSize,
               '-o-background-size': newSize,
               'background-size': newSize,
-              '-webkit-filter':'blur('+ 0 + (fromTop/10) + 'px)',
+              '-webkit-filter':'blur('+ 0 + (fromTop/100) + 'px)',
               'opacity': 1 - ((fromTop / $('html').height()) *1.3)
           });
       }
