@@ -12,7 +12,7 @@ $(function(){
               '-o-background-size': newSize,
               'background-size': newSize,
               '-webkit-filter':'blur('+ 0 + (fromTop/100) + 'px)',
-              'opacity': 1 - ((fromTop / $('html').height()) *1.3)
+              'opacity': 0.97 - ((fromTop / $('html').height()) )
           });
       }
     });
