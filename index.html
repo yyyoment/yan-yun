@@ -184,7 +184,7 @@
 					<h2 class="section-heading text-uppercase">Portfolio</h2>
 					<h3 class="section-subheading text-muted">A glimpse of the projects I've been working on</h3>
 					<div id="portfolio-button-container">
-						<button class="btn btn-secondary active" data-portfolio-section="all">Show all</button>
+						<button class="btn btn-secondary active" data-portfolio-section="all">Show All</button>
 						<button class="btn btn-secondary" data-portfolio-section="dataana">Data Analytics</button>
 						<button class="btn btn-secondary" data-portfolio-section="dataviz">Data Visualization</button>
 						<button class="btn btn-secondary" data-portfolio-section="statistics">Statistics</button>
@@ -208,7 +208,20 @@
 					  </div>
 					  <img class="img-fluid" src="projects/vene/vene.jpg" alt="" style="border-radius: 2%;">
 					</a>
-				  </div>	
+				  </div>
+				  
+				<div class="col-md-3 col-sm-6 portfolio-item show column dataana ">
+				<a class="portfolio-link" data-toggle="modal" href="#glassdoor">
+				  <div class="portfolio-hover">
+					<div class="portfolio-hover-content">
+					  <p>Glassdoor Review Analysis</p>
+					  <hr>
+					  <p class="explanation_portfolio">- Used <font color="black"><strong>R</strong></font> to perform <u style="color:white">text mining</u> on glassdoor reviews and build up a <u style="color:white">convolutional neural network</u> model to predict the glassdoor ratings.</p>
+					</div>
+				  </div>
+				  <img class="img-fluid" src="projects/gd/glassdoor.jpg" alt="" style="border-radius: 2%;">
+				</a>
+				</div>
 					
 				<div class="col-md-3 col-sm-6 portfolio-item show column dataviz statistics dataana ">
 					<a class="portfolio-link" data-toggle="modal" href="#spotify">
@@ -389,7 +402,7 @@
 			</div>
 			  </div></center>
 
-			  <!-- media -->
+			  <!-- vene -->
 			<center><div class="portfolio-modal modal fade" id="vene" tabindex="-1" role="dialog" aria-hidden="true">
 				<div class="modal-dialog h-100">
 				  <div class="modal-content">
@@ -430,6 +443,46 @@
 			</div>
 			  </div></center>
 
+			  <!-- gd -->
+			<center><div class="portfolio-modal modal fade" id="glassdoor" tabindex="-1" role="dialog" aria-hidden="true">
+				<div class="modal-dialog h-100">
+				  <div class="modal-content">
+					<div class="close-modal" data-dismiss="modal">
+					  <div class="lr">
+						<div class="rl"></div>
+					  </div>
+					</div>
+					<div class="container">
+					  <div class="row" style="color:black">
+						<div class="col-lg-11 mx-auto">
+						  <div class="modal-body">
+	
+							<div class="row">
+							<div class="col-lg-3" style="padding-top: 40px;padding-bottom: 40px;">
+							
+							<img src="projects/gd/glassdoor1.jpg" width="120px"></img>
+							<h4>Glassdoor Review Analysis</h4>
+							<p style="max-width: 600px"><br>Text analysis of Glassdoor reviews<br>&<br>Deep Learning model for predicting Glassdoor ratings for each review</p>
+							<a style="margin-top: 0px" class="btn btn-secondary btn text-uppercase js-scroll-trigger" href="https://github.com/yyyoment/Glassdoor-Review-Analysis" target="_blank">Code</a>
+							<a style="margin-top: 0px" class="btn btn-secondary btn text-uppercase js-scroll-trigger" title="test" href="work/glassdoor.html" target="_blank" >Write-up</a>
+							
+							</div>
+	
+							<div class="col-lg-9" style="padding-top: 40px;padding-bottom: 40px;">
+							<div style="text-align: left">
+							  <h6>Description</h6>
+							  <hr>
+							  <p>
+								Learning the sentiments and topics associate with reviews of employees provided to a third party reviews website like Glassdoor might be useful intelligence for HRs and management board at the company in understanding its perceived strengths and weaknesses from an unfiltered employee perspective.</p>
+							  <p>The analysis focuses on the Glassdoor employee reviews of 4 organizations. The reviews are broken into 3 separate parts: pros, cons, and advice. Using these reviews, <u>sentiment analysis</u> and <u>topic modeling</u> are conducted to find out the specific topics within a corpus of documents and predict the rating. In addition, a <u>CNN(convolutional neural network)</u> model was built up to predict the ratings based on the given reviews. All the works are performed in <font color="#69B3AB">R</font>.</p>
+							</div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				</div>
+			</div>
+			  </div></center>
 	  <!-- ======================================================================= -->
 
 
