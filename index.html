@@ -196,14 +196,28 @@
 				<br><br>
 				<div id="portfolio-items" class="row">
 
-					
+				
+				<div class="col-md-3 col-sm-6 portfolio-item show column dataana ml">
+					<a class="portfolio-link" data-toggle="modal" href="#lc">
+					  <div class="portfolio-hover">
+						<div class="portfolio-hover-content">
+						  <p>Lending Club Loan Prediction</p>
+						  <hr>
+						  <p class="explanation_portfolio">Used <font color="black"><strong>Python</strong></font> to explore how a model could be built to effectively predict a potential
+							borrower’s chance of default.</p>
+						</div>
+					  </div>
+					  <img class="img-fluid" src="projects/lc/lc3.jpg" alt="" style="border-radius: 2%;">
+					</a>
+				  </div>	
+
 				<div class="col-md-3 col-sm-6 portfolio-item show column dataviz ">
 					<a class="portfolio-link" data-toggle="modal" href="#vene">
 					  <div class="portfolio-hover">
 						<div class="portfolio-hover-content">
 						  <p>A Staggering Exodus into Colombia</p>
 						  <hr>
-						  <p class="explanation_portfolio">- Used <font color="black"><strong>Tableau</strong></font> and public data to analyze the Venezuelan migration crisis with a specific focus on its impact on Colombia.</p>
+						  <p class="explanation_portfolio">Used <font color="black"><strong>Tableau</strong></font> and public data to analyze the Venezuelan migration crisis with a specific focus on its impact on Colombia.</p>
 						</div>
 					  </div>
 					  <img class="img-fluid" src="projects/vene/vene.jpg" alt="" style="border-radius: 2%;">
@@ -216,7 +230,7 @@
 					<div class="portfolio-hover-content">
 					  <p>Glassdoor Review Analysis</p>
 					  <hr>
-					  <p class="explanation_portfolio">- Used <font color="black"><strong>R</strong></font> to perform <u style="color:white">text mining</u> on glassdoor reviews and build up a <u style="color:white">convolutional neural network</u> model to predict the glassdoor ratings.</p>
+					  <p class="explanation_portfolio">Used <font color="black"><strong>R</strong></font> to perform <u style="color:white">text mining</u> on glassdoor reviews and build up a <u style="color:white">convolutional neural network</u> model to predict the glassdoor ratings.</p>
 					</div>
 				  </div>
 				  <img class="img-fluid" src="projects/gd/glassdoor.jpg" alt="" style="border-radius: 2%;">
@@ -257,7 +271,7 @@
 						<div class="portfolio-hover-content">
 						  <p>Save the Traditional Media Company</p>
 						  <hr>
-						  <p class="explanation_portfolio">- Used <font color="black"><strong>Tableau</strong></font> to conduct analyses and help the traditional media company to stand out in the competition with digital media.</p>
+						  <p class="explanation_portfolio">Used <font color="black"><strong>Tableau</strong></font> to conduct analyses and help the traditional media company to stand out in the competition with digital media.</p>
 						</div>
 					  </div>
 					  <img class="img-fluid" src="img1/project-pic/media4.png" alt="" style="border-radius: 2%;">
@@ -475,6 +489,52 @@
 							  <p>
 								Learning the sentiments and topics associate with reviews of employees provided to a third party reviews website like Glassdoor might be useful intelligence for HRs and management board at the company in understanding its perceived strengths and weaknesses from an unfiltered employee perspective.</p>
 							  <p>The analysis focuses on the Glassdoor employee reviews of 4 organizations. The reviews are broken into 3 separate parts: pros, cons, and advice. Using these reviews, <u>sentiment analysis</u> and <u>topic modeling</u> are conducted to find out the specific topics within a corpus of documents and predict the rating. In addition, a <u>CNN(convolutional neural network)</u> model was built up to predict the ratings based on the given reviews. All the works are performed in <font color="#69B3AB">R</font>.</p>
+							</div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				</div>
+			</div>
+			  </div></center>
+
+
+			  <!-- gd -->
+			<center><div class="portfolio-modal modal fade" id="lc" tabindex="-1" role="dialog" aria-hidden="true">
+				<div class="modal-dialog h-100">
+				  <div class="modal-content">
+					<div class="close-modal" data-dismiss="modal">
+					  <div class="lr">
+						<div class="rl"></div>
+					  </div>
+					</div>
+					<div class="container">
+					  <div class="row" style="color:black">
+						<div class="col-lg-11 mx-auto">
+						  <div class="modal-body">
+	
+							<div class="row">
+							<div class="col-lg-3" style="padding-top: 40px;padding-bottom: 40px;">
+							
+							<img src="img1/header/loan3.jpg" width="220px"></img>
+							<h4>Lending Club Loan Prediction</h4>
+							<p style="max-width: 600px"><br>A Bank Loan Default Prediction with Machine Learning Classification Model</p>
+							<a style="margin-top: 0px" class="btn btn-secondary btn text-uppercase js-scroll-trigger" href="https://github.com/yyyoment/LendingClub-Loan-Defult-Prediction" target="_blank">Code</a>
+							<a style="margin-top: 0px" class="btn btn-secondary btn text-uppercase js-scroll-trigger" title="test" href="work/lending.html" target="_blank" >Write-up</a>
+							
+							</div>
+	
+							<div class="col-lg-9" style="padding-top: 40px;padding-bottom: 40px;">
+							<div style="text-align: left">
+							  <h6>Description</h6>
+							  <hr>
+							  <p>
+								The analysis of credit risk and the decision making for granting loans are important tasks for financial institutions. With historical data, we are able to train a model and thus accurately predict future outcomes.</p>
+							  <p>
+								After the data cleansing and feature selection (<u>Recursive Feature Elimination & Pearson Correlation</u>) phase, I built up a <u>logistic regression</u> model to predict the loan default likelihood. Also, I used <u>grid-search cv</u> to improve the model performance and used <u>cross-validation</u> to further validate the model.
+								I also consider the <u>data leakage</u> issue and consider whether all the default data are created equal.
+								All the works are performed in <font color="#69B3AB">Python</font> and the dataset comes from <a href="https://www.kaggle.com/wendykan/lending-club-loan-data" target="_blank">
+								Kaggle</a>.</p>
 							</div>
 						</div>
 					  </div>
