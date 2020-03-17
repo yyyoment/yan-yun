@@ -237,6 +237,19 @@
 				</a>
 				</div>
 					
+				<div class="col-md-3 col-sm-6 portfolio-item show column dataviz dataana ">
+					<a class="portfolio-link" data-toggle="modal" href="#wwe">
+					  <div class="portfolio-hover">
+						<div class="portfolio-hover-content">
+						  <p>WWE Earnings Call Transcript Analysis</p>
+						  <hr>
+						  <p class="explanation_portfolio">Used <font color="black"><strong>R</strong></font> to perform <u style="color:white">sentiment analysis</u> on WWE Earnings Call Transcripts and <u style="color:white">scraped</u> stock prices to explore the investment behavior patterns.</p>
+						</div>
+					  </div>
+					  <img class="img-fluid" src="projects/wwe/wwe11.jpg" alt="" style="border-radius: 2%;">
+					</a>
+					</div>
+
 				<div class="col-md-3 col-sm-6 portfolio-item show column dataviz statistics dataana ">
 					<a class="portfolio-link" data-toggle="modal" href="#spotify">
 					  <div class="portfolio-hover">
@@ -498,8 +511,52 @@
 			</div>
 			  </div></center>
 
+			   <!-- wwe -->
+			<center><div class="portfolio-modal modal fade" id="wwe" tabindex="-1" role="dialog" aria-hidden="true">
+				<div class="modal-dialog h-100">
+				  <div class="modal-content">
+					<div class="close-modal" data-dismiss="modal">
+					  <div class="lr">
+						<div class="rl"></div>
+					  </div>
+					</div>
+					<div class="container">
+					  <div class="row" style="color:black">
+						<div class="col-lg-11 mx-auto">
+						  <div class="modal-body">
+	
+							<div class="row">
+							<div class="col-lg-3" style="padding-top: 40px;padding-bottom: 40px;">
+							
+							<img src="projects/wwe/wwe4.jpeg" width="200px"></img>
+							<h4>WWE Earnings Call Transcript Analysis</h4>
+							<p style="max-width: 600px"><br>Sentiment analysis on earnings call transcripts and its relationship with the closing stock prices</p>
+							<a style="margin-top: 0px" class="btn btn-secondary btn text-uppercase js-scroll-trigger" href="https://github.com/yyyoment/Earning-Calls-Analysis" target="_blank">Code</a>
+							<a style="margin-top: 0px" class="btn btn-secondary btn text-uppercase js-scroll-trigger" title="test" href="work/wwecalls.html" target="_blank" >Write-up</a>
+							
+							</div>
+	
+							<div class="col-lg-9" style="padding-top: 40px;padding-bottom: 40px;">
+							<div style="text-align: left">
+							  <h6>Description</h6>
+							  <hr>
+							  <p>
+								Earnings call is a conference call among the management of a public company, analysts, investors, and the media to discuss the company’s financial situation during a given reporting period, such as a quarter or a fiscal year.</p>
+							  <p>In this analysis, I dig into the WWE earnings call transcript and perform <u>sentiment analysis</u> with various lexicons. In addition, I <u>scraped</u> WWE’s stock prices using the <a href="https://www.alphavantage.co/documentation/" target="_blank">
+								Alpha Vantage API</a> to analyze the relationship between closing prices and the sentiment scores and try to find out the investment behavior patterns based upon a call. I also created an interactive visualization showing time series trend line under different sentiment scores with <font color="#69B3AB">plotly</font>.</p>
+								<p>All the works are performed in <font color="#69B3AB">R</font>.</p>
 
-			  <!-- gd -->
+							  
+							</div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				</div>
+			</div>
+			  </div></center>
+
+			  <!-- loan -->
 			<center><div class="portfolio-modal modal fade" id="lc" tabindex="-1" role="dialog" aria-hidden="true">
 				<div class="modal-dialog h-100">
 				  <div class="modal-content">
